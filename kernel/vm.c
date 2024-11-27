@@ -479,7 +479,7 @@ void print_pte(pagetable_t pagetable, int index, pte_t pte, uint64 pa, int level
 }
 
 void vmprint(pagetable_t pagetable) {
-  printf("Page table %p\n", (void *)pagetable);
+  printf("page table %p\n", (void *)pagetable);
 
   // Iterate through all entries in the first level page table
   for (int i = 0; i < 512; i++) {
