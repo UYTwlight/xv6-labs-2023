@@ -19,3 +19,40 @@ Tăng tốc: Nếu các tiến trình sử dụng trang chia sẻ, họ có th�
 6. wait() và exit()
 Giải thích: Lệnh gọi wait() và exit() xử lý việc đồng bộ hóa và kết thúc tiến trình con. Thông thường, thông tin cần được truyền giữa tiến trình cha và con.
 Tăng tốc: Nếu các tiến trình chia sẻ một trang bộ nhớ chứa thông tin trạng thái của tiến trình, thông tin này có thể được truy cập trực tiếp mà không cần phải sử dụng các cơ chế sao chép qua lại hoặc giao tiếp phức tạp giữa các tiến trình.
+
+------------------------------------------------------------------------------
+
+CHI TIẾT ĐẦU RA CỦA HÀM vmprint():
+
+Cấu trúc:
+.. .. ..0: pte 0x0000000021fda01b pa 0x0000000087f68000
+
+    Trong đó:
+    .. biểu thị cấp bậc của bảng trang
+    0 chỉ số mục của bảng trang
+    pte <PTE> là giá trị PTE hay là địa chỉ ảo
+    pa <PA> là địa chỉ vật lý tương ứng
+
+Bit	Mô tả
+0	PTE_V (Valid): Có hợp lệ không
+1	PTE_R (Read): Quyền đọc
+2	PTE_W (Write): Quyền ghi
+3	PTE_X (Execute): Quyền thực thi
+4	PTE_U (User): Truy cập bởi User mode
+6	PTE_A (Accessed): Đã được truy cập
+7	PTE_D (Dirty): Đã được ghi
+10–53	Physical Address (PA)
+
+Lấy 2 bit cuối của pte chuyển sang nhị phân
+1b(HEX) = 00011011(BIN)
+
+Xét từ phải sang trái
+Bit 0 = 1: Hợp lệ
+Bit 1 = 1: Có thể đọc
+Bit 2 = 0: Không thể ghi
+Bit 3 = 1: Có thể thực thi
+Bit 4 = 1: Cho phép User mode
+Bit 6 = 1: Chưa được truy cập
+Bit 7 = 1: Chưa được ghi
+
+------------------------------------------------------------------------------
