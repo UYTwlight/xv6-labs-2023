@@ -449,3 +449,49 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+void print_pte(pagetable_t pagetable, int index, pte_t pte, uint64 pa, int level) {
+  // Print PTE information in tree structure
+  for (int j = -1; j < level; j++) {
+    if(j==-1){
+      printf("..");
+    }
+    else{
+      printf(" ..");
+    }
+  }
+
+  // Print PTE
+  printf("%d: pte %p pa %p\n", index, (void *)pte, (void *)pa);
+
+  // If the PTE points to a lower-level page table, continue traversing
+  if ((pte & PTE_V) && !(pte & (PTE_R | PTE_W | PTE_X))) {  
+    // If not a leaf node, continue recursion
+    pagetable_t next_table = (pagetable_t)PTE2PA(pte); // Get the address of the next table
+    for (int j = 0; j < 512; j++) {
+      pte_t next_pte = next_table[j];
+      if (next_pte & PTE_V) {  // Valid PTE Test
+        uint64 next_pa = PTE2PA(next_pte);
+        print_pte(next_table, j, next_pte, next_pa, level + 1); // Incease level
+      }
+    }
+  }
+}
+
+void vmprint(pagetable_t pagetable) {
+  printf("Page table %p\n", (void *)pagetable);
+
+  // Iterate through all entries in the first level page table
+  for (int i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+
+    // Check if PTE is valid (PTE_V bit is valid bit)
+    if ((pte & PTE_V) == 0) {
+        continue; // Skip PTE invalid
+    }
+
+    uint64 pa = PTE2PA(pte); // Get physical address from PTE
+    int level = 0; // Start with level 0
+    print_pte(pagetable, i, pte, pa, level);
+  }
+}
