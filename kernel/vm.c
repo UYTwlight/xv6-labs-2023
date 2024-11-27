@@ -453,12 +453,7 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 void print_pte(pagetable_t pagetable, int index, pte_t pte, uint64 pa, int level) {
   // Print PTE information in tree structure
   for (int j = -1; j < level; j++) {
-    if(j==-1){
-      printf("..");
-    }
-    else{
-      printf(" ..");
-    }
+    printf(" ..");
   }
 
   // Print PTE
