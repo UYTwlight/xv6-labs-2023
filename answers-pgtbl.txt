@@ -1,0 +1,21 @@
+TĂNG TỐC SYSTEM CALL
+Câu hỏi thêm: 	 	 	 	
+Những lệnh gọi hệ thống nào khác trong xv6 có thể được tăng tốc bằng cách sử dụng trang chia sẻ này? Hãy giải thích.
+1. fork()
+Giải thích: Lệnh gọi fork() tạo một bản sao của tiến trình cha. Thông thường, lệnh gọi này yêu cầu sao chép toàn bộ bộ nhớ của tiến trình cha sang tiến trình con. Tuy nhiên, nếu sử dụng trang chia sẻ (shared memory), cả tiến trình cha và con có thể chia sẻ một số phần của bộ nhớ mà không cần sao chép lại, giúp tiết kiệm tài nguyên và thời gian.
+Tăng tốc: Thay vì sao chép toàn bộ không gian bộ nhớ, tiến trình cha và con có thể chia sẻ các trang bộ nhớ nhất định mà không cần phải tạo bản sao riêng biệt, làm giảm chi phí của fork() và cải thiện hiệu suất.
+2. exec()
+Giải thích: Lệnh gọi exec() thay thế không gian bộ nhớ của một tiến trình hiện tại bằng một chương trình mới. Thông thường, khi mà thay thế không gian bộ nhớ sẽ gây tốn kém nếu phải tải lại tất cả dữ liệu từ đĩa.
+Tăng tốc: Nếu sử dụng trang chia sẻ, dữ liệu chung (như thư viện dùng chung) có thể được chia sẻ giữa tiến trình cũ và tiến trình mới, giúp tiết kiệm thời gian tải lại và tối ưu hóa việc sử dụng bộ nhớ.
+3. read() và write()
+Giải thích: Các lệnh gọi read() và write() thực hiện việc sao chép dữ liệu giữa không gian user và kernel. Việc sao chép này có thể tốn thời gian nếu dữ liệu lớn.
+Tăng tốc: Nếu các tiến trình chia sẻ một vùng nhớ thông qua trang chia sẻ, ta sẽ tránh phải sao chép dữ liệu giữa kernel và user mode. Thay vào đó, chỉ cần thao tác trực tiếp lên bộ nhớ chia sẻ, giúp giảm độ trễ và tăng tốc quá trình truyền tải dữ liệu.
+4. mmap()
+Giải thích: Lệnh gọi mmap() ánh xạ tệp hoặc bộ nhớ vào không gian địa chỉ của tiến trình, giúp tiến trình có thể trực tiếp truy cập tệp mà không cần phải đọc qua hệ thống tệp.
+Tăng tốc: Nếu các tiến trình sử dụng shared memory thông qua mmap(), chúng có thể trực tiếp truy cập bộ nhớ chia sẻ mà không cần sao chép dữ liệu qua lại. Điều này giúp giảm độ trễ và cải thiện hiệu suất khi làm việc với bộ nhớ lớn.
+5. **pipe() và socket()
+Giải thích: Các lệnh gọi này dùng để truyền thông giữa các tiến trình. Thông thường, dữ liệu sẽ được sao chép qua lại giữa các tiến trình thông qua bộ nhớ không gian kernel.
+Tăng tốc: Nếu các tiến trình sử dụng trang chia sẻ, họ có thể trực tiếp trao đổi dữ liệu qua vùng bộ nhớ chia sẻ mà không cần phải sao chép dữ liệu qua lại, giúp cải thiện hiệu suất truyền thông.
+6. wait() và exit()
+Giải thích: Lệnh gọi wait() và exit() xử lý việc đồng bộ hóa và kết thúc tiến trình con. Thông thường, thông tin cần được truyền giữa tiến trình cha và con.
+Tăng tốc: Nếu các tiến trình chia sẻ một trang bộ nhớ chứa thông tin trạng thái của tiến trình, thông tin này có thể được truy cập trực tiếp mà không cần phải sử dụng các cơ chế sao chép qua lại hoặc giao tiếp phức tạp giữa các tiến trình.
